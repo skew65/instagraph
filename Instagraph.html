@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shrinking Bar Graph</title>
+  <style>
+    #graph {
+      width: 600px;
+      height: 400px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .like-bar {
+      width: 40px;
+      background-color: green;
+      margin-right: 10px;
+      display: inline-block;
+      transition: height 0.5s ease-in-out;
+    }
+
+    .dislike-bar {
+      width: 40px;
+      background-color: red;
+      margin-right: 10px;
+      display: inline-block;
+      transition: height 0.5s ease-in-out;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="graph">
+    <div id="likeBar" class="like-bar"></div>
+    <div id="dislikeBar" class="dislike-bar"></div>
+  </div>
+  <button id="likeBtn" onclick="increaseBarHeight('likeBar')">Like</button>
+  <button id="dislikeBtn" onclick="increaseBarHeight('dislikeBar')">Dislike</button>
+
+  <script>
+    const likeBar = document.getElementById('likeBar');
+    const dislikeBar = document.getElementById('dislikeBar');
+    let shrinkInterval;
+
+    function increaseBarHeight(barId) {
+      const bar = document.getElementById(barId);
+      const currentHeight = bar.offsetHeight;
+      bar.style.height = currentHeight + 10 + 'px';
+
+      clearInterval(shrinkInterval); // Stop shrinking if button is clicked
+      shrinkInterval = setInterval(shrinkBars, 500);
+    }
+
+    function shrinkBars() {
+      const currentLikeHeight = likeBar.offsetHeight;
+      const currentDislikeHeight = dislikeBar.offsetHeight;
+      const newLikeHeight = currentLikeHeight - (currentLikeHeight * 0.05); // Reduce by 0.25%
+      const newDislikeHeight = currentDislikeHeight - (currentDislikeHeight * 0.05); // Reduce by 0.25%
+
+      likeBar.style.height = newLikeHeight + 'px';
+      dislikeBar.style.height = newDislikeHeight + 'px';
+
+      if (newLikeHeight <= 0 && newDislikeHeight <= 0) {
+        clearInterval(shrinkInterval);
+      }
+    }
+  </script>
+</body>
+</html>
