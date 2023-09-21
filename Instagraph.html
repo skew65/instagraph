@@ -7,24 +7,35 @@
       width: 600px;
       height: 400px;
       border: 1px solid #ccc;
+      position: relative;
       display: flex;
       align-items: flex-end;
     }
 
-    .like-bar {
+    .like-bar,
+    .dislike-bar {
       width: 40px;
-      background-color: green;
       margin-right: 10px;
       display: inline-block;
-      transition: height 0.5s ease-in-out;
+      transition: height 0.3s ease-in-out;
+    }
+
+    .like-bar {
+      background-color: green;
     }
 
     .dislike-bar {
-      width: 40px;
       background-color: red;
-      margin-right: 10px;
-      display: inline-block;
-      transition: height 0.5s ease-in-out;
+    }
+
+    .bar-label {
+      position: absolute;
+      left: -50px;
+      bottom: 0;
+    }
+
+    .bar-height {
+      margin-top: 10px;
     }
 
     button {
@@ -36,37 +47,66 @@
   <div id="graph">
     <div id="likeBar" class="like-bar"></div>
     <div id="dislikeBar" class="dislike-bar"></div>
+    <div class="bar-label" id="likeLabel">0</div>
+    <div class="bar-label" id="dislikeLabel">0</div>
   </div>
+  <div class="bar-height" id="likeHeight">Height: 0px</div>
+  <div class="bar-height" id="dislikeHeight">Height: 0px</div>
   <button id="likeBtn" onclick="increaseBarHeight('likeBar')">Like</button>
   <button id="dislikeBtn" onclick="increaseBarHeight('dislikeBar')">Dislike</button>
 
   <script>
     const likeBar = document.getElementById('likeBar');
     const dislikeBar = document.getElementById('dislikeBar');
+    const likeLabel = document.getElementById('likeLabel');
+    const dislikeLabel = document.getElementById('dislikeLabel');
+    const likeHeight = document.getElementById('likeHeight');
+    const dislikeHeight = document.getElementById('dislikeHeight');
     let shrinkInterval;
+    let reductionAmount = 1;
 
     function increaseBarHeight(barId) {
       const bar = document.getElementById(barId);
       const currentHeight = bar.offsetHeight;
       bar.style.height = currentHeight + 10 + 'px';
 
-      clearInterval(shrinkInterval); // Stop shrinking if button is clicked
-      shrinkInterval = setInterval(shrinkBars, 500);
+      if (currentHeight >= 100 && currentHeight < 250) {
+        reductionAmount = 2;
+      } else if (currentHeight >= 250 && currentHeight < 500) {
+        reductionAmount = 3;
+      } else if (currentHeight >= 500 && currentHeight < 1000) {
+        reductionAmount = 4;
+      } else if (currentHeight >= 1000) {
+        reductionAmount = 5;
+      }
+
+      if (currentHeight < 1) {
+        clearInterval(shrinkInterval);
+        shrinkInterval = setInterval(shrinkBars, 300);
+      }
     }
 
     function shrinkBars() {
       const currentLikeHeight = likeBar.offsetHeight;
       const currentDislikeHeight = dislikeBar.offsetHeight;
-      const newLikeHeight = currentLikeHeight - (currentLikeHeight * 0.05); // Reduce by 0.25%
-      const newDislikeHeight = currentDislikeHeight - (currentDislikeHeight * 0.05); // Reduce by 0.25%
+      const newLikeHeight = currentLikeHeight - reductionAmount; // Reduce by reductionAmount pixels
+      const newDislikeHeight = currentDislikeHeight - reductionAmount; // Reduce by reductionAmount pixels
 
       likeBar.style.height = newLikeHeight + 'px';
       dislikeBar.style.height = newDislikeHeight + 'px';
+
+      likeLabel.textContent = newLikeHeight;
+      dislikeLabel.textContent = newDislikeHeight;
+
+      likeHeight.textContent = 'Height: ' + newLikeHeight + 'px';
+      dislikeHeight.textContent = 'Height: ' + newDislikeHeight + 'px';
 
       if (newLikeHeight <= 0 && newDislikeHeight <= 0) {
         clearInterval(shrinkInterval);
       }
     }
+
+    shrinkInterval = setInterval(shrinkBars, 300);
   </script>
 </body>
 </html>
